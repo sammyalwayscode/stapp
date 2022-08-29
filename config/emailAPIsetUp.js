@@ -1,14 +1,13 @@
 const { google } = require("googleapis");
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
-const CLIENT_ID =
-  "560020375245-22inuvpgcn979j0c1hjgqekrjq3rl2t0.apps.googleusercontent.com";
-const CLIENT_SECRETE = "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";
-const CLIENT_REDIRECT = "https://developers.google.com/oauthplayground";
-const CLIENT_TOKEN =
-  "1//048xXsPNaYGdsCgYIARAAGAQSNwF-L9IrjYpGsbMKBq9Q7i8_yFfIoomBf6SlCGwH6Qxlq97yxnnIrc86YfsDoxcLpyq9DDb9Ns0";
+const CLIENT_ID = process.env.OAUTH_CLIENT_ID;
+const CLIENT_SECRETE = process.env.OAUTH_CLIENT_SECRETE;
+const CLIENT_REDIRECT = process.env.OAUTH_CLIENT_REDIRECT;
+const CLIENT_TOKEN = process.env.OAUTH_CLIENT_TOKEN;
 
 const oAuth2Client = new google.auth.OAuth2(
   CLIENT_ID,
@@ -22,8 +21,8 @@ const verifyMail = async (email, adminUser, name, adminToken) => {
   try {
     const tokenValue = crypto.randomBytes(23).toString("hex");
     // const adminToken = crypto.randomBytes(5).toString("hex");
-    const myToken = jwt.sign({ tokenValue }, "elEGAnceiNYoUrskiNCAre", {
-      expiresIn: "2d",
+    const myToken = jwt.sign({ tokenValue }, process.env.TOKEN_SECRETE, {
+      expiresIn: process.env.EXPIRE_TOKEN,
     });
     const accessToken = await oAuth2Client.getAccessToken();
 
@@ -31,15 +30,15 @@ const verifyMail = async (email, adminUser, name, adminToken) => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: "sammysamtest3@gmail.com",
+        user: "skintriumph@gmail.com",
         clientId: CLIENT_ID,
         clientSecret: CLIENT_SECRETE,
         refreshToken: CLIENT_TOKEN,
-        accessToken: accessToken.myToken,
+        accessToken: accessToken.token,
       },
     });
     const mailOptions = {
-      from: "Skin Triumph 📧📭📭📥 <sammysamtest3@gmail.com>",
+      from: "Skin Triumph 📧📭📭📥 <skintriumph@gmail.com>",
       to: email,
       subject: "Account Verification",
       html: `
@@ -73,21 +72,21 @@ const orderMail = async (email, opt) => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: "sammysamtest3@gmail.com",
+        user: "skintriumph@gmail.com",
         clientId: CLIENT_ID,
         clientSecret: CLIENT_SECRETE,
         refreshToken: CLIENT_TOKEN,
-        accessToken: accessToken.myToken,
+        accessToken: accessToken.token,
       },
     });
     const mailOptions = {
-      from: "Skin Triumph 📧📭📭📥 <sammysamtest3@gmail.com>",
+      from: "Skin Triumph 📧📭📭📥 <skintriumph@gmail.com>",
       to: email,
       subject: "Purchase Sucessfull",
       html: `
       Hi There✌️, Thank you for your Order, your items will be delivered between 2-3 working days.
       Our Dispatcher will get in touch with you
-      Hear is your Product ID to get your Product from the dispatcher ${opt}
+      Hear is your Product ID to get your Product from the dispatcher <b> ${opt} </b>
       `,
     };
     const result = transport.sendMail(mailOptions, (err, info) => {

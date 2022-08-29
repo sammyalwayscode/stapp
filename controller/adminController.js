@@ -33,8 +33,8 @@ const signUpAdmin = async (req, res) => {
         const cloudImage = await cloudinary.uploader.upload(req.file.path);
         const tokenValue = crypto.randomBytes(23).toString("hex");
         const adminToken = crypto.randomBytes(5).toString("hex");
-        const myToken = jwt.sign({ tokenValue }, "elEGAnceiNYoUrskiNCAre", {
-          expiresIn: "2d",
+        const myToken = jwt.sign({ tokenValue }, process.env.TOKEN_SECRETE, {
+          expiresIn: process.env.EXPIRE_TOKEN,
         });
 
         const adminUser = await adminModel.create({
@@ -138,8 +138,8 @@ const signInAdmin = async (req, res) => {
               isVerify: user.isVerify,
               isAdmin: user.isAdmin,
             },
-            "elEGAnceiNYoUrskiNCAre",
-            { expiresIn: "2d" }
+            process.env.TOKEN_SECRETE,
+            { expiresIn: process.env.EXPIRE_TOKEN }
           );
 
           res.status(200).json({
