@@ -64,4 +64,60 @@ const createBlog = async (req, res) => {
   }
 };
 
-module.exports = { getBlogs, createBlog, getBlog };
+const deleteBlog = async (req, res) => {
+  try {
+    const deleteData = await blogModel.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      message: "Deleted",
+      data: deleteData,
+    });
+  } catch (error) {
+    res.status(404).json({
+      message: "An Error Occoured",
+      data: error.message,
+    });
+  }
+};
+
+const updateBlog = async (req, res) => {
+  try {
+    const check = await blogModel.findById(req.params.id);
+    if (check) {
+      const {
+        blogTitle,
+        blogShotDes,
+        descPragraphOne,
+        descPragraphTwo,
+        descPragraphThree,
+      } = req.body;
+      cloudinary.uploader.destroy(check.blogImgID);
+      const cloudImage = await cloudinary.uploader.upload(req.file.path);
+
+      const newUpdate = await blogModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          blogTitle,
+          blogShotDes,
+          descPragraphOne,
+          descPragraphTwo,
+          descPragraphThree,
+          blogImg: cloudImage.secure_url,
+          blogImgID: cloudImage.public_id,
+        },
+        { new: true }
+      );
+
+      res.status(200).json({
+        message: "Updated",
+        data: newUpdate,
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      message: "An error Occorued",
+      data: error.message,
+    });
+  }
+};
+
+module.exports = { getBlogs, createBlog, getBlog, deleteBlog, updateBlog };

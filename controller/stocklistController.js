@@ -52,4 +52,52 @@ const createStore = async (req, res) => {
   }
 };
 
-module.exports = { getAStore, getAllStocklist, createStore };
+const updateStocklist = async (req, res) => {
+  try {
+    const { office, phoneNo, address, email, hours } = req.body;
+    const update = await stocklistModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        office,
+        phoneNo,
+        address,
+        email,
+        hours,
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Updated",
+      data: update,
+    });
+  } catch (error) {
+    res.status(404).json({
+      mesage: "An Error Occoured",
+      data: error.message,
+    });
+  }
+};
+
+const deleteStocklist = async (req, res) => {
+  try {
+    const deleteStock = await stocklistModel.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      message: "Deleted",
+      data: deleteStock,
+    });
+  } catch (error) {
+    res.status(404).json({
+      message: "An Error Occured",
+      data: error.message,
+    });
+  }
+};
+
+module.exports = {
+  getAStore,
+  getAllStocklist,
+  createStore,
+  updateStocklist,
+  deleteStocklist,
+};
