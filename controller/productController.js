@@ -62,7 +62,7 @@ const createProduct = async (req, res) => {
   } catch (error) {
     res.status(404).json({
       message: "Couldn't Create Product",
-      data: error.message,
+      data: error,
     });
   }
 };
