@@ -4,7 +4,7 @@ const otpGenerator = require("otp-generator");
 
 const createOrder = async (req, res) => {
   try {
-    const { email, orderDetail } = req.body;
+    const { email, orderDetail, totalQantity, totalPrice } = req.body;
 
     const otp = otpGenerator.generate(10, {
       specialChars: false,
@@ -17,6 +17,8 @@ const createOrder = async (req, res) => {
       email,
       orderOTP: otp,
       orderDetail,
+      totalQantity,
+      totalPrice,
     });
     orderMail(email, otp)
       .then((result) => {
@@ -70,4 +72,73 @@ const updateDelivery = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getOrdered, updateDelivery };
+const getOneOrder = async (req, res) => {
+  try {
+    const oneOrder = await orderedModel.findById(req.params.id);
+    res.status(200).json({
+      message: "Data Gotten",
+      data: oneOrder,
+    });
+  } catch (error) {
+    res.status(404).json({
+      message: "Couldn't Get Data",
+      data: error.message,
+    });
+  }
+};
+
+const paginateOrder = async (req, res) => {
+  try {
+    const { pages, limit } = req.query;
+
+    const queryItems = await orderedModel
+      .find()
+      .limit(limit)
+      .skip((pages - 1) * limit);
+
+    res.status(201).json({
+      total: queryItems.length,
+      message: "Item Gotten",
+      data: queryItems,
+    });
+  } catch (error) {
+    res.status(404).json({
+      message: "An Error Occored",
+      data: error.message,
+    });
+  }
+};
+
+const searchOrder = async (req, res) => {
+  try {
+    const makeSearch = req.query.search
+      ? {
+          $or: [
+            { username: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const allOrders = await orderedModel.find(makeSearch);
+
+    res.status(201).json({
+      message: "Order seen",
+      data: allOrders,
+    });
+  } catch (error) {
+    res.status(404).json({
+      message: "An Error Occured",
+      data: error.message,
+    });
+  }
+};
+
+module.exports = {
+  createOrder,
+  getOrdered,
+  updateDelivery,
+  getOneOrder,
+  paginateOrder,
+  searchOrder,
+};

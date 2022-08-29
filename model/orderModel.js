@@ -7,6 +7,12 @@ const orderSchema = mongoose.Schema(
     orderOTP: {
       type: String,
     },
+    totalPrice: {
+      type: Number,
+    },
+    totalQantity: {
+      type: Number,
+    },
     delivered: {
       type: Boolean,
       default: false,
