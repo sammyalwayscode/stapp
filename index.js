@@ -14,7 +14,7 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.status(200).json("Ready🚀🚀🚀...");
+  res.status(200).json("Ready 🚀🚀🚀...");
 });
 
 app.use("/api/product", productRoute);
